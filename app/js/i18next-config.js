@@ -25,9 +25,7 @@ const i18nOpts = {
   backend: backOpts,
   //  lng: 'es',
   fallbackLng: {
-    zh: ['en'],
-    "sw-TZ": ['en'],
-    default: ['en']
+    default: ['es']
   },
   sendMissingTo: 'fallback',
   interpolation: {
@@ -48,7 +46,7 @@ const i18nOpts = {
   ns: 'common',
   defaultNS: 'common',
   saveMissing: true, // if true seems it's fails to getResourceBundle
-  saveMissingTo: 'en',
+  saveMissingTo: 'es',
   keySeparator: 'ß',
   nsSeparator: 'ð',
   pluralSeparator: 'đ'
@@ -129,7 +127,7 @@ i18n.use(backend)
       });
       // used in clean theme
       if( $('#dropdown-lang').length ) {
-        $('#dropdown-lang').find('.dropdown-toggle').html(i18n.language + ' <span class="caret"></span>');
+        $('#dropdown-lang').find('.dropdown-toggle').html(i18n.t('nav.language') + ' <span class="caret"></span>');
       }
 
       if (typeof Cookies.get(laSessionCookie) === 'undefined' && typeof currentUrl.query.lang === 'undefined') {

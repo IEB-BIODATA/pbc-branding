@@ -6,49 +6,35 @@
 const fs = require('fs');
 const settings = require('./app/js/settings.js');
 
-// Add your theme in app/themes and select it in app/js/settings.js theme property
-//
-// Currently we have serveral themes:
-// - clean
-// - material
-// - flatly (based in clean + custom bootstrap)
-//
-const theme = settings.theme;
-const cleanBased = theme == 'flatly' || theme == 'superhero' || theme == 'yeti' || theme == 'cosmo' || theme == 'darkly' || theme == 'paper' || theme == 'sandstone' || theme == 'simplex' || theme == 'slate';
-const themeAssets = cleanBased || theme == 'clean'? 'clean': theme;
-
-const toReplace = [/index\.html$/,      // index can be used as your main LA page
-                   /errorPage\.html/,   // An error page that can be used in your infrastructure
-                   /testPage\.html$/,   // testPate is just for text some headings, buttons, etc
-                   /testSmall\.html$/]; // testSmall is for test the footer with small contents
+const toReplace = [/banner\.html$/,
+  /index\.html$/,      // index can be used as your main LA page
+  /errorPage\.html/,   // An error page that can be used in your infrastructure
+  /testPage\.html$/,   // testPate is just for text some headings, buttons, etc
+  /testSmall\.html$/]; // testSmall is for test the footer with small contents
 
 const toReplaceOthers = [/banner\.html$/,
-                         /footer\.html$/,
-                         /index\.html$/,      // index can be used as your main LA page
-                         /errorPage\.html/,   // An error page that can be used in your infrastructure
-                         /testPage\.html$/,   // testPate is just for text some headings, buttons, etc
-                         /testSmall\.html$/]; // testSmall is for test the footer with small contents
+  /footer\.html$/,
+  /index\.html$/,      // index can be used as your main LA page
+  /errorPage\.html/,   // An error page that can be used in your infrastructure
+  /testPage\.html$/,   // testPate is just for text some headings, buttons, etc
+  /testSmall\.html$/]; // testSmall is for test the footer with small contents
 
 // Don't add head.html above because this replacement is done by ala-boostrap
 exports.files = {
   javascripts: {
     joinTo: {
       'js/vendor.js': [ // Files that are not in `app/js` dir.
-         /^(?!app)/
+        /^(?!app)/
       ],
       'js/app.js': [
         'app/js/*js',
-        ...( cleanBased ? [ 'app/themes/clean/js/*.js'  ] : []),
-        `app/themes/${theme}/js/*.js`
       ]
     }
   },
   stylesheets: {
     joinTo: {
       'css/app.css': [
-         'app/css/*css',
-         ...(cleanBased ? [ 'app/themes/clean/css/*.css'  ] : []),
-         `app/themes/${theme}/css/*.css`
+          'app/css/*css',
       ]
     }
   }
@@ -66,11 +52,10 @@ exports.plugins = {
   copycat: {
     // just copy ALA default builded files to our build
     // These are loaded by ala-bootstrap3 library, so we need to load manually in our development testPage
-    'js': [ 'commonui-bs3-2019/build/js/'],
-    ...(theme == 'material' ? {'material-lite': [ 'app/themes/material/material-lite' ]}: {}),
-    ...(theme == 'material' ? {'custom-bootstrap': [ 'app/themes/material/custom-bootstrap' ]}: {}),
-    'css': [ 'commonui-bs3-2019/build/css/' ],
-    'fonts': 'commonui-bs3-2019/build/fonts/',
+    'js': [ 'commonui-bs3-2019/build/js/', 'pbd-home/js/' ],
+    'css': [ 'commonui-bs3-2019/build/css/', 'pbd-home/css/' ],
+    'fonts': [ 'commonui-bs3-2019/build/fonts/', 'pbd-home/fonts/' ],
+    'images': [ 'pbd-home/images/' ],
     verbose : false, // shows each file that is copied to the destination directory
     onlyChanged: true // only copy a file if it's modified time has changed (only effective when using brunch watch)
   },
@@ -80,23 +65,26 @@ exports.plugins = {
       // Right now this file replacements are only done with `brunch build` and not via the watcher
       // So if you edit them, exec `brunch build` later
       { files: toReplace, match: { find: 'INDEX_BODY', replace: () => {
-        return fs.readFileSync(`app/themes/${themeAssets}/assets/indexBody.html`, 'utf8');
-      }}},
+            return fs.readFileSync(`pbd-home/assets/indexBody.html`, 'utf8');
+          }}},
       { files: toReplace, match: { find: 'TEST_BODY', replace: () => {
-        return fs.readFileSync(`app/themes/${themeAssets}/assets/testBody.html`, 'utf8');
-      }}},
+            return fs.readFileSync(`pbd-home/assets/testBody.html`, 'utf8');
+          }}},
       { files: toReplace, match: { find: 'HEADLOCAL_HERE', replace: () => {
-        return fs.readFileSync(`app/themes/${themeAssets}/assets/headLocal.html`, 'utf8');
-      }}},
+            return fs.readFileSync(`pbd-home/assets/headLocal.html`, 'utf8');
+          }}},
       { files: toReplace, match: { find: 'HEAD_HERE', replace: () => {
-        return fs.readFileSync(`app/themes/${themeAssets}/assets/head.html`, 'utf8');
-      }}},
+            return fs.readFileSync(`pbd-home/assets/head.html`, 'utf8');
+          }}},
+      { files: toReplace, match: { find: 'BASE_BANNER_HERE', replace: () => {
+            return fs.readFileSync(`pbd-home/assets/base_banner.html`, 'utf8');
+          }}},
       { files: toReplace, match: { find: 'BANNER_HERE', replace: () => {
-        return fs.readFileSync(`app/themes/${themeAssets}/assets/banner.html`, 'utf8');
-      }}},
+            return fs.readFileSync(`pbd-home/assets/banner.html`, 'utf8');
+          }}},
       { files: toReplace, match: { find: 'FOOTER_HERE', replace: () => {
-        return fs.readFileSync(`app/themes/${themeAssets}/assets/footer.html`, 'utf8');
-      }}},
+            return fs.readFileSync(`pbd-home/assets/footer.html`, 'utf8');
+          }}},
 
       // These replacements are done by
       // https://github.com/AtlasOfLivingAustralia/ala-bootstrap3/blob/grails2/grails-app/taglib/au/org/ala/bootstrap3/HeaderFooterTagLib.groovy#L208
@@ -104,9 +92,10 @@ exports.plugins = {
 
       { files: toReplace, match: { find: '::containerClass::', replace: 'container' }},
       { files: toReplace, match: { find: '::headerFooterServer::', replace:
-                                   process.env.NODE_ENV === 'development' ?
-                                   'http://localhost:3333':
-                                   settings.baseFooterUrl }},
+              process.env.NODE_ENV === 'development' ?
+                  'http://localhost:3333':
+                  settings.baseFooterUrl
+        }},
       { files: toReplace, match: { find: '::loginURL::', replace: `${settings.services.cas.url}/cas/login` }},
       { files: toReplace, match: { find: '::logoutURL::', replace: `${settings.services.cas.url}/cas/logout` }},
       { files: toReplace, match: { find: '::searchServer::', replace: settings.services.bie.url }},
@@ -118,9 +107,11 @@ exports.plugins = {
       // Also edit app/js/settings.js before build
 
 
+      { files: toReplaceOthers, match: { find: '::mainURL::', replace: settings.mainUrl }},
       { files: toReplaceOthers, match: { find: '::collectoryURL::', replace: settings.services.collectory.url }},
-      { files: toReplaceOthers, match: { find: '::datasetsURL::', replace: `${settings.services.collectory.url}/datasets`
-      }},
+      { files: toReplaceOthers, match: { find: '::datasetsURL::', replace:
+              `${settings.services.collectory.url}/datasets`
+        }},
       { files: toReplaceOthers, match: { find: '::biocacheURL::', replace: settings.services.biocache.url }},
       { files: toReplaceOthers, match: { find: '::bieURL::', replace: settings.services.bie.url }},
       { files: toReplaceOthers, match: { find: '::regionsURL::', replace: settings.services.regions.url }},
@@ -151,8 +142,6 @@ exports.plugins = {
 exports.conventions = {
   // file won't be compiled and will be just moved to public directory instead
   ignored: [
-    ...(theme == 'material' ? [ /^app\/material-lite/ ] : []),
-    ...(theme == 'material' ? [ /^app\/custom-bootstrap/ ] : [])
   ]
 };
 
@@ -164,9 +153,7 @@ exports.server = {
 
 // FIXME, document this
 exports.paths = {
-  watched: ['app/js', 'app/css', 'app/assets', `app/themes/${theme}/assets`, `app/themes/${theme}/css`,
-    `app/themes/${themeAssets}/assets`, `app/themes/${themeAssets}/css`
-]
+  watched: ['app/js', 'app/css', 'app/assets', `pbd-home/assets`, `pbd-home/js`, `pbd-home/css`, `pbd-home/assets`]
 };
 
 
